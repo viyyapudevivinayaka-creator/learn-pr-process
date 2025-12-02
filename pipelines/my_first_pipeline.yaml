@@ -1,0 +1,27 @@
+                 # My First Pipeline - Learning Git     ← Comment (just a note)
+name: PC_Test_Pipeline                 ← Pipeline name
+
+tasks:                                 ← List of jobs to run
+
+  - name: Extract_Data                 ← Task 1: Get data
+    type: notebook
+    path: /Asset/PC/extract_data       ← Location of notebook
+
+  - name: Transform_Data               ← Task 2: Process data
+    type: notebook
+    path: /Asset/PC/transform_data
+    depends_on: Extract_Data           ← Runs AFTER Extract_Data
+
+  - name: Load_Data                    ← Task 3: Save data
+    type: notebook
+    path: /Asset/PC/load_data
+    depends_on: Transform_Data         ← Runs AFTER Transform_Data
+```
+
+---
+
+## **Visual Flow:**
+```
+Extract_Data → Transform_Data → Load_Data
+    (1)             (2)            (3)
+    
