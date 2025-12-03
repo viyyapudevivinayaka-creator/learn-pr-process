@@ -1,0 +1,48 @@
+# PC Employee Data Pipeline
+# Similar to real BP Databricks workflow
+
+name: PC_Employee_Data
+
+tasks:
+  - name: Data_Freshness_Check
+    type: notebook
+    path: /Asset/PC/file_checks/Check_Employee_Files
+    description: "Check if employee data files arrived"
+
+  - name: Extract_Employee_Data
+    type: notebook
+    path: /Asset/PC/Employee/extract_data
+    depends_on: Data_Freshness_Check
+    run_if: all_succeeded
+
+  - name: Transform_Employee_Data
+    type: notebook
+    path: /Asset/PC/Employee/transform_data
+    depends_on: Extract_Employee_Data
+
+  - name: Load_To_Curated
+    type: notebook
+    path: /Asset/PC/Employee/load_curated
+    depends_on: Transform_Employee_Data
+
+  - name: Log_Success
+    type: notebook
+    path: /Asset/PC/Logs/log_pipeline_execution
+    depends_on: Load_To_Curated
+    run_if: all_succeeded
+    parameters:
+      pipeline_name: PC_Employee_Data
+      model_name: Employee
+      status: Success
+      description: "Employee data pipeline completed successfully"
+
+  - name: Log_Failure
+    type: notebook
+    path: /Asset/PC/Logs/log_pipeline_execution
+    depends_on: Data_Freshness_Check
+    run_if: all_failed
+    parameters:
+      pipeline_name: PC_Employee_Data
+      model_name: Employee
+      status: Failed
+      description: "Employee data pipeline failed"
